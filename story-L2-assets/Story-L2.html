@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Story Overview | The New Drago Family</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            ndf: {
+              deep: '#0B0806',
+              paper: '#F0EFE9',
+              gold: '#C5A065',
+              twilight: '#0F1724',
+              red: '#8A1C1C'
+            }
+          },
+          fontFamily: {
+            sans: ['Manrope', 'sans-serif'],
+            serif: ['Playfair Display', 'serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+          boxShadow: {
+            soft: '0 30px 80px rgba(11,8,6,0.12)'
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body { background: #F0EFE9; color: #0B0806; }
+    ::selection { background: #C5A065; color: #0B0806; }
+
+    .noise-overlay{
+      position: fixed; inset: 0;
+      pointer-events: none; z-index: 10;
+      opacity: 0.03;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+    }
+
+    .reveal { opacity: 0; transform: translateY(12px); transition: all 900ms cubic-bezier(0.16, 1, 0.3, 1); }
+    .reveal.active { opacity: 1; transform: translateY(0); }
+    .delay-100 { transition-delay: 100ms; }
+    .delay-200 { transition-delay: 200ms; }
+    .delay-300 { transition-delay: 300ms; }
+    .delay-450 { transition-delay: 450ms; }
+    .delay-600 { transition-delay: 600ms; }
+
+    .hero-grid {
+      background-image:
+        radial-gradient(circle at 18% 15%, rgba(197,160,101,0.22), transparent 44%),
+        radial-gradient(circle at 82% 30%, rgba(15,23,36,0.12), transparent 46%),
+        radial-gradient(circle at 50% 95%, rgba(197,160,101,0.12), transparent 48%),
+        linear-gradient(180deg, rgba(255,255,255,0.65), rgba(240,239,233,1));
+    }
+
+    .hairline {
+      background: linear-gradient(90deg, transparent, rgba(11,8,6,0.20), transparent);
+      height: 1px;
+    }
+  
+    .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0.85rem;
+    border-radius: 9999px;
+    background: rgba(11,8,6,0.08);          /* light charcoal */
+    border: 1px solid rgba(11,8,6,0.20);     /* clearer ring */
+    color: rgba(11,8,6,0.78);
+    }
+
+    .chip svg { color: rgba(197,160,101,0.95); }
+
+    .chip--dark {
+    background: rgba(255,255,255,0.10);
+    border: 1px solid rgba(255,255,255,0.18);
+    color: rgba(240,239,233,0.85);
+    }
+
+  </style>
+</head>
+
+<body class="antialiased overflow-x-hidden">
+  <div class="noise-overlay"></div>
+
+  <header class="sticky top-0 z-40">
+  <div class="backdrop-blur bg-ndf-paper/70 border-b border-ndf-deep/10">
+    <nav class="mx-auto max-w-6xl px-6 md:px-12 py-4 flex items-center justify-between">
+
+      <div class="flex items-center gap-4">
+        <button type="button" class="shrink-0"
+          onclick="window.scrollTo({ top: 0, behavior: 'smooth' })"
+          aria-label="Scroll to top">
+          <img
+            src="https://raw.githubusercontent.com/docodo10/NDF5Web/main/assets/home/Logo_NDF5_Red_png_noline.PNG"
+            alt="NDF5 Productions"
+            class="h-14 md:h-14 w-auto block object-contain"
+            decoding="async"
+          />
+        </button>
+
+        <div class="hidden sm:flex items-center gap-3">
+          <a id="backLink" href="#"
+            class="flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-ndf-deep/70 hover:text-ndf-deep transition">
+            <i data-lucide="arrow-left" class="w-4 h-4"></i>
+            <span data-i18n="back_main">Back</span>
+          </a>
+          <span class="text-ndf-deep/30">/</span>
+          <span class="text-xs font-mono uppercase tracking-widest text-ndf-deep/60" data-i18n="kicker">Story</span>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <button type="button" onclick="toggleLang()"
+          class="bg-white/70 border border-ndf-deep/20 px-4 py-2 text-xs font-mono uppercase tracking-widest text-ndf-deep hover:bg-ndf-gold hover:border-ndf-gold hover:text-ndf-deep transition-all duration-300">
+          <span id="lang-btn">FR</span>
+        </button>
+
+        <a id="mainLinkTop" href="#"
+          class="hidden sm:flex items-center gap-2 bg-ndf-deep text-ndf-paper px-6 py-2 text-xs font-mono uppercase tracking-widest hover:bg-ndf-gold hover:text-ndf-deep transition-all duration-300">
+          <span data-i18n="open_main">Main</span>
+          <i data-lucide="external-link" class="w-4 h-4"></i>
+        </a>
+      </div>
+
+    </nav>
+  </div>
+</header>
+   
+
+  <!-- Hero (text-forward like Saga-L2) -->
+  <header class="pt-10 md:pt-12">
+    <div class="container mx-auto max-w-6xl px-6 md:px-12">
+      <div class="hero-grid relative overflow-hidden rounded-2xl shadow-soft border border-ndf-deep/10">
+        <div class="absolute inset-0 pointer-events-none">
+          <div class="absolute -top-24 -left-24 w-64 h-64 rounded-full bg-ndf-gold/10 blur-2xl"></div>
+          <div class="absolute -bottom-28 -right-28 w-72 h-72 rounded-full bg-ndf-twilight/10 blur-2xl"></div>
+        </div>
+
+        <div class="relative p-8 md:p-12">
+          <div class="reveal flex flex-col gap-4">
+            <div class="flex flex-wrap items-center gap-3">
+              <h2 class="text-xs font-mono uppercase tracking-widest text-ndf-deep/60" data-i18n="story_title">
+              The New Drago Family
+              </h2>
+            </div>
+
+            <h1 class="reveal delay-100 text-4xl md:text-6xl font-serif tracking-tight text-ndf-deep" data-i18n="title">
+              Story Overview
+            </h1>
+
+            <p class="reveal delay-200 text-base md:text-lg text-ndf-deep/80 leading-relaxed max-w-3xl" data-i18n="subtitle">
+              A five-year annual crime-family chronology set in the 2000s, driven by secrets, power, and moral erosion.
+            </p>
+
+            <div class="reveal delay-300 mt-2 flex flex-wrap gap-2">
+              <span class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/70 border border-ndf-deep/10 text-xs font-mono uppercase tracking-widest text-ndf-deep/80">
+                <i data-lucide="layers" class="w-4 h-4"></i>
+                <span data-i18n="pill_triangle">A three-force triangle</span>
+              </span>
+
+              <span class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/70 border border-ndf-deep/10 text-xs font-mono uppercase tracking-widest text-ndf-deep/80">
+                <i data-lucide="calendar" class="w-4 h-4"></i>
+                <span data-i18n="pill_years">FS1–FS5 (2005–2044)</span>
+              </span>
+
+              <span class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/70 border border-ndf-deep/10 text-xs font-mono uppercase tracking-widest text-ndf-deep/80">
+                <i data-lucide="sparkles" class="w-4 h-4 text-ndf-gold"></i>
+                <span data-i18n="pill_hook">Year-end: outcomes + questions</span>
+              </span>
+            </div>
+
+            <div class="reveal delay-450 mt-7 grid sm:grid-cols-3 gap-3">
+              <div class="rounded-2xl bg-ndf-deep text-ndf-paper border border-black/10 p-5">
+                <div class="text-xs font-mono uppercase tracking-widest text-ndf-paper/70" data-i18n="m1_k">Core</div>
+                <div class="mt-2 text-sm leading-snug text-ndf-paper/90" data-i18n="m1_v">Wealth, power, love, ambition</div>
+              </div>
+              <div class="rounded-2xl bg-white/70 border border-ndf-deep/10 p-5">
+                <div class="text-xs font-mono uppercase tracking-widest text-ndf-deep/60" data-i18n="m2_k">Engine</div>
+                <div class="mt-2 text-sm leading-snug text-ndf-deep/85" data-i18n="m2_v">Secrets and shocking twists</div>
+              </div>
+              <div class="rounded-2xl bg-white/70 border border-ndf-deep/10 p-5">
+                <div class="text-xs font-mono uppercase tracking-widest text-ndf-deep/60" data-i18n="m3_k">Destination</div>
+                <div class="mt-2 text-sm leading-snug text-ndf-deep/85" data-i18n="m3_v">From Drago Island to the summit of American society</div>
+              </div>
+            </div>
+
+            <!-- Rectangular buttons -->
+            <div class="reveal delay-600 mt-7 flex flex-wrap gap-3">
+            <a href="#premise"
+                class="bg-ndf-gold text-ndf-deep px-8 py-3 font-mono text-xs uppercase tracking-widest hover:bg-white transition-all duration-300"
+                data-i18n="cta_start">
+                Start
+            </a>
+
+            <a id="ctaBackHero" href="#"
+                class="bg-ndf-deep text-ndf-paper px-8 py-3 font-mono text-xs uppercase tracking-widest hover:bg-ndf-gold hover:text-ndf-deep transition-all duration-300"
+                data-i18n="cta_back_story">
+                Back to Story section
+            </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-10 hairline"></div>
+
+      <div class="mt-8 grid md:grid-cols-12 gap-8">
+        <!-- Left rail -->
+        <aside class="md:col-span-4 lg:col-span-3">
+          <div class="md:sticky md:top-28">
+            <div class="rounded-2xl border border-ndf-deep/10 bg-white/60 backdrop-blur p-5">
+              <div class="text-xs font-mono uppercase tracking-widest text-ndf-deep/60" data-i18n="toc">On this page</div>
+              <div class="mt-4 flex flex-col gap-2 text-sm">
+                <a href="#premise" class="hover:text-ndf-gold transition-colors" data-i18n="toc_1">Premise</a>
+                <a href="#triangle" class="hover:text-ndf-gold transition-colors" data-i18n="toc_2">The triangle</a>
+                <a href="#chapters" class="hover:text-ndf-gold transition-colors" data-i18n="toc_3">FS1–FS5</a>
+                <a href="#next" class="hover:text-ndf-gold transition-colors" data-i18n="toc_4">Next steps</a>
+              </div>
+            </div>
+
+            <div class="mt-4 rounded-2xl border border-ndf-deep/10 bg-ndf-deep text-ndf-paper p-5">
+              <div class="text-xs font-mono uppercase tracking-widest text-ndf-paper/70" data-i18n="side_k">Note</div>
+              <div class="mt-3 text-sm leading-relaxed text-ndf-paper/90" data-i18n="side_p">
+                This page is spoiler-safe by design: high-level stakes, no key reveals.
+              </div>
+              <div class="mt-4 flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-ndf-paper/70">
+                <i data-lucide="shield" class="w-4 h-4 text-ndf-gold"></i>
+                <span data-i18n="side_tag">Industry-facing overview</span>
+              </div>
+            </div>
+          </div>
+        </aside>
+
+        <!-- Main -->
+        <main class="md:col-span-8 lg:col-span-9">
+          <!-- Premise -->
+          <section id="premise" class="scroll-mt-28">
+            <h2 class="reveal text-2xl md:text-3xl font-serif italic tracking-tight text-ndf-deep" data-i18n="pr_h">Premise</h2>
+
+            <p class="reveal delay-200 mt-4 text-base md:text-lg text-ndf-deep/85 leading-relaxed" data-i18n="pr_p1"></p>
+
+            <p class="reveal delay-300 mt-4 text-base md:text-lg text-ndf-deep/85 leading-relaxed" data-i18n="pr_p2"></p>
+
+            <p class="reveal delay-450 mt-4 text-base md:text-lg text-ndf-deep/85 leading-relaxed" data-i18n="pr_p3"></p>
+          </section>
+
+          <!-- Triangle -->
+          <section id="triangle" class="mt-12 scroll-mt-28">
+            <h2 class="reveal text-2xl md:text-3xl font-serif italic tracking-tight text-ndf-deep" data-i18n="tr_h">The triangle</h2>
+
+            <div class="reveal delay-200 mt-6 grid md:grid-cols-3 gap-4">
+              <div class="rounded-2xl border border-ndf-deep/10 bg-white/70 p-6">
+                <div class="flex items-start gap-3">
+                  <i data-lucide="crown" class="w-5 h-5 text-ndf-gold mt-[2px]"></i>
+                  <div>
+                    <div class="text-xs font-mono uppercase tracking-widest text-ndf-deep/60" data-i18n="tr_c1_h">Domenico</div>
+                    <div class="mt-2 text-sm md:text-base text-ndf-deep/85 leading-relaxed" data-i18n="tr_c1_p"></div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="rounded-2xl border border-ndf-deep/10 bg-white/70 p-6">
+                <div class="flex items-start gap-3">
+                  <i data-lucide="brain" class="w-5 h-5 text-ndf-gold mt-[2px]"></i>
+                  <div>
+                    <div class="text-xs font-mono uppercase tracking-widest text-ndf-deep/60" data-i18n="tr_c2_h">Lenny</div>
+                    <div class="mt-2 text-sm md:text-base text-ndf-deep/85 leading-relaxed" data-i18n="tr_c2_p"></div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="rounded-2xl border border-ndf-deep/10 bg-white/70 p-6">
+                <div class="flex items-start gap-3">
+                  <i data-lucide="palette" class="w-5 h-5 text-ndf-gold mt-[2px]"></i>
+                  <div>
+                    <div class="text-xs font-mono uppercase tracking-widest text-ndf-deep/60" data-i18n="tr_c3_h">Greta</div>
+                    <div class="mt-2 text-sm md:text-base text-ndf-deep/85 leading-relaxed" data-i18n="tr_c3_p"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Chapters -->
+          <section id="chapters" class="mt-12 scroll-mt-28">
+            <h2 class="reveal text-2xl md:text-3xl font-serif italic tracking-tight text-ndf-deep" data-i18n="ch_h">FS1–FS5</h2>
+            <p class="reveal delay-200 mt-4 text-base md:text-lg text-ndf-deep/85 leading-relaxed" data-i18n="ch_p"></p>
+            <p class="reveal delay-300 mt-3 text-xs font-mono uppercase tracking-widest text-ndf-deep/60">
+            <span data-i18n="fs_note"></span>
+            </p>
+
+            <div class="reveal delay-300 mt-7 grid lg:grid-cols-2 gap-4">
+              <!-- FS1 -->
+              <div class="rounded-2xl border border-ndf-deep/10 bg-white/70 p-6">
+                <div class="flex items-start justify-between gap-4">
+                  <div>
+                    <div class="text-xs font-mono uppercase tracking-widest text-ndf-deep/60" data-i18n="fs1_k">FS1</div>
+                    <div class="mt-2 text-xl font-serif italic tracking-tight text-ndf-deep" data-i18n="fs1_h">2005</div>
+                  </div>
+                  <span class="chip text-[10px] font-mono uppercase tracking-widest">
+                    <i data-lucide="map-pin" class="w-4 h-4"></i>
+                    <span data-i18n="fs1_tag">California</span>
+                  </span>
+                </div>
+                <p class="mt-4 text-sm md:text-base text-ndf-deep/85 leading-relaxed" data-i18n="fs1_p"></p>
+              </div>
+
+              <!-- FS2 -->
+              <div class="rounded-2xl border border-ndf-deep/10 bg-white/70 p-6">
+                <div class="flex items-start justify-between gap-4">
+                  <div>
+                    <div class="text-xs font-mono uppercase tracking-widest text-ndf-deep/60" data-i18n="fs2_k">FS2</div>
+                    <div class="mt-2 text-xl font-serif italic tracking-tight text-ndf-deep" data-i18n="fs2_h">2006</div>
+                  </div>
+                  <span class="chip text-[10px] font-mono uppercase tracking-widest">
+                    <i data-lucide="map-pin" class="w-4 h-4"></i>
+                    <span data-i18n="fs2_tag">Aftermath</span>
+                  </span>
+                </div>
+                <p class="mt-4 text-sm md:text-base text-ndf-deep/85 leading-relaxed" data-i18n="fs2_p"></p>
+              </div>
+
+              <!-- FS3 -->
+              <div class="rounded-2xl border border-ndf-deep/10 bg-white/70 p-6">
+                <div class="flex items-start justify-between gap-4">
+                  <div>
+                    <div class="text-xs font-mono uppercase tracking-widest text-ndf-deep/60" data-i18n="fs3_k">FS3</div>
+                    <div class="mt-2 text-xl font-serif italic tracking-tight text-ndf-deep" data-i18n="fs3_h">2008</div>
+                  </div>
+                  <span class="chip text-[10px] font-mono uppercase tracking-widest">
+                    <i data-lucide="map-pin" class="w-4 h-4"></i>
+                    <span data-i18n="fs3_tag">Shift</span>
+                  </span>
+                </div>
+                <p class="mt-4 text-sm md:text-base text-ndf-deep/85 leading-relaxed" data-i18n="fs3_p"></p>
+              </div>
+
+              <!-- FS4 -->
+              <div class="rounded-2xl border border-ndf-deep/10 bg-white/70 p-6">
+                <div class="flex items-start justify-between gap-4">
+                  <div>
+                    <div class="text-xs font-mono uppercase tracking-widest text-ndf-deep/60" data-i18n="fs4_k">FS4</div>
+                    <div class="mt-2 text-xl font-serif italic tracking-tight text-ndf-deep" data-i18n="fs4_h">2009</div>
+                  </div>
+                  <span class="chip text-[10px] font-mono uppercase tracking-widest">
+                    <i data-lucide="map-pin" class="w-4 h-4"></i>
+                    <span data-i18n="fs4_tag">Global</span>
+                  </span>
+                </div>
+                <p class="mt-4 text-sm md:text-base text-ndf-deep/85 leading-relaxed" data-i18n="fs4_p"></p>
+              </div>
+
+              <!-- FS5 -->
+              <div class="lg:col-span-2 rounded-2xl border border-ndf-deep/10 bg-ndf-deep text-ndf-paper p-7">
+                <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
+                  <div>
+                    <div class="text-xs font-mono uppercase tracking-widest text-ndf-paper/70" data-i18n="fs5_k">FS5</div>
+                    <div class="mt-2 text-2xl md:text-3xl font-serif italic tracking-tight text-ndf-paper" data-i18n="fs5_h">2044</div>
+                  </div>
+                  <span class="chip chip--dark text-[10px] font-mono uppercase tracking-widest">
+                    <i data-lucide="cpu" class="w-4 h-4"></i>
+                    <span data-i18n="fs5_tag">Future</span>
+                  </span>
+                </div>
+                <p class="mt-4 text-sm md:text-base text-ndf-paper/90 leading-relaxed" data-i18n="fs5_p"></p>
+              </div>
+            </div>
+          </section>
+
+          <!-- Next steps -->
+          <section id="next" class="mt-12 pb-16 scroll-mt-28">
+            <h2 class="reveal text-2xl md:text-3xl font-serif italic tracking-tight text-ndf-deep" data-i18n="nx_h">Next steps</h2>
+            <p class="reveal delay-200 mt-4 text-base md:text-lg text-ndf-deep/85 leading-relaxed" data-i18n="nx_p"></p>
+
+            <div class="reveal delay-300 mt-7 flex flex-wrap gap-3">
+            <a id="goCharacters"
+                class="bg-ndf-gold text-ndf-deep px-8 py-3 font-mono text-xs uppercase tracking-widest hover:bg-white transition-all duration-300"
+                href="#"
+                data-i18n="nx_characters">
+                Characters
+            </a>
+
+            <a id="goTimeline"
+                class="bg-ndf-gold text-ndf-deep px-8 py-3 font-mono text-xs uppercase tracking-widest hover:bg-white transition-all duration-300"
+                href="#"
+                data-i18n="nx_timeline">
+                Timeline
+            </a>
+
+            <a id="goProduction"
+                class="bg-ndf-gold text-ndf-deep px-8 py-3 font-mono text-xs uppercase tracking-widest hover:bg-white transition-all duration-300"
+                href="#"
+                data-i18n="nx_production">
+                Production
+            </a>
+            </div>
+
+            <div class="reveal delay-450 mt-10 rounded-2xl border border-ndf-deep/10 bg-white/60 p-6">
+              <div class="text-xs font-mono uppercase tracking-widest text-ndf-deep/60" data-i18n="footer_line">
+                For industry presentation purposes.<br>© 2026 NDF5 Productions Inc. All rights reserved.
+              </div>
+            </div>
+          </section>
+        </main>
+      </div>
+    </div>
+  </header>
+
+  <script>
+    const i18n = {
+      en: {
+        back_main: "Back",
+        open_main: "Main",
+
+        kicker: "Story",
+        kicker2: "Overview",
+        title: "Story Overview",
+        subtitle: "A psychological and adventurous crime-family saga where wealth, power, love, and ambition collide — and where conscience yields to greed in the pursuit of the American dream.",
+        pill_triangle: "A three-force triangle",
+        pill_years: "FS1–FS5 (2005–2044)",
+        pill_hook: "Year-end: outcomes + questions",
+
+        m1_k: "Core",
+        m1_v: "Wealth, power, love, ambition",
+        m2_k: "Engine",
+        m2_v: "Secrets and shocking twists",
+        m3_k: "Destination",
+        m3_v: "From Drago Island to the summit of American society",
+
+        cta_start: "Start",
+        cta_back_story: "Back to Story section",
+
+        toc: "On this page",
+        toc_1: "Premise",
+        toc_2: "The triangle",
+        toc_3: "FS1–FS5",
+        toc_4: "Next steps",
+
+        side_k: "Note",
+        side_p: "This page is spoiler-safe by design: high-level stakes, no key reveals.",
+        side_tag: "Industry-facing overview",
+
+        pr_h: "Premise",
+        pr_p1: "The New Drago Family is a high-end crime-family universe built on psychological tension, big emotional stakes, and the seduction of wealth — where every gain comes with a hidden cost.",
+        pr_p2: "The story is powered by a three-force triangle: Domenico Drago, a charismatic Don defending identity and legacy; Lenny Abimonti, a brilliant counselor whose ambition outgrows restraint; and Greta Otterra, a steady navigator caught between art, love, and danger.",
+        pr_p3: "Across an annual five-chapter chronology set in the 2000s, the saga travels from Drago Island to the outer limits of influence and power, with two directors expressing opposing states of the criminal mind — beauty on the surface, darkness underneath.",
+
+        tr_h: "The triangle",
+        tr_c1_h: "Domenico Drago",
+        tr_c1_p: "Charismatic Don, fighting to preserve identity, loyalty, and the family empire.",
+        tr_c2_h: "Lenny Abimonti",
+        tr_c2_p: "Gifted counselor, ambitious strategist, whose intellect gradually outgrows conscience.",
+        tr_c3_h: "Greta Otterra",
+        tr_c3_p: "Wise navigator steering between art, love, and danger — a stabilizing force in the storm.",
+
+        ch_h: "FS1–FS5",
+        fs_note: "* FS stands for Film & Series.",
+        ch_p: "A five-year annual chronology with rising stakes, evolving power, and a hook at the end of every chapter.",
+
+        fs1_k: "FS1",
+        fs1_h: "2005",
+        fs1_tag: "California",
+        fs1_p: "In 2005 California, Don Domenico Drago rules a powerful empire built on loyalty, strategy, and legacy. But when love, ambition, and betrayal collide, a single strike threatens everything. As enemies rise, one question remains: can power protect family?",
+        fs2_k: "FS2",
+        fs2_h: "2006",
+        fs2_tag: "Aftermath",
+        fs2_p: "The Drago family reels from deep personal and financial losses. As loyalties are tested and secrets simmer, bold moves are made to reclaim what was taken. But with the future uncertain, confronted with a storm, can a fractured family hold onto its legacy?",
+        fs3_k: "FS3",
+        fs3_h: "2008",
+        fs3_tag: "Shift",
+        fs3_p: "A sudden shift in leadership ignites fierce rivalries within the Drago dynasty. As alliances break and ambitions rise, new power plays reshape the family’s path. In a world of shifting loyalties and growing public influence—who truly holds control?",
+        fs4_k: "FS4",
+        fs4_h: "2009",
+        fs4_tag: "Global",
+        fs4_p: "With global tensions mounting and inner trust fading, the Drago family faces battles on every front—from criminal empires to political power. As secrets unravel, enemies close in, and new goals arise, survival demands unity—but may unity be possible still?",
+        fs5_k: "FS5",
+        fs5_h: "2044",
+        fs5_tag: "Future",
+        fs5_p: "In a future ruled by tech and titles, the coronation of a crown prince sparks a nation’s unrest. As rebellion rises and power is challenged, the Dragos stand at a crossroads. What decision and secret could determine the fate of an entire empire?",
+
+        nx_h: "Next steps",
+        nx_p: "Continue exploring the project on the main site: Saga positioning, timeline of production, and characters.",
+        nx_characters: "Characters",
+        nx_timeline: "Timeline",
+        nx_production: "Production",
+
+        footer_line: "For industry presentation purposes.<br>© 2026 NDF5 Productions Inc. All rights reserved."
+      },
+
+      fr: {
+        back_main: "Retour",
+        open_main: "Site",
+
+        kicker: "Histoire",
+        kicker2: "Aperçu",
+        title: "Aperçu de l’histoire",
+        subtitle: "Une saga criminelle psychologique et aventureuse où richesse, pouvoir, amour et ambition se percutent — et où la conscience cède à la cupidité dans la poursuite du rêve américain.",
+        pill_triangle: "Un triangle de forces",
+        pill_years: "FS1–FS5 (2005–2044)",
+        pill_hook: "Fins d’année : résultats + questions",
+
+        m1_k: "Noyau",
+        m1_v: "Richesse, pouvoir, amour, ambition",
+        m2_k: "Moteur",
+        m2_v: "Secrets et rebondissements",
+        m3_k: "Destination",
+        m3_v: "De l’île Drago au sommet de la société américaine",
+
+        cta_start: "Commencer",
+        cta_back_story: "Retour à la section Histoire",
+
+        toc: "Sur cette page",
+        toc_1: "Prémisse",
+        toc_2: "Le triangle",
+        toc_3: "FS1–FS5",
+        toc_4: "Étapes suivantes",
+
+        side_k: "Note",
+        side_p: "Page pensée sans divulgâcheurs : enjeux élevés, aucun twist majeur révélé.",
+        side_tag: "Présentation pour l’industrie",
+
+        pr_h: "Prémisse",
+        pr_p1: "La Nouvelle Famille Drago est un univers criminel haut de gamme, porté par une tension psychologique, de grands enjeux émotionnels et l’attrait du luxe — où chaque victoire cache un prix.",
+        pr_p2: "Le récit s’articule autour d’un triangle de forces : Domenico Drago, Don charismatique qui protège identité et héritage; Lenny Abimonti, conseiller brillant dont l’ambition dépasse peu à peu les limites; et Greta Otterra, navigatrice lucide entre art, amour et danger.",
+        pr_p3: "À travers une chronologie annuelle en cinq chapitres ancrée dans les années 2000, la saga voyage de l’île Drago jusqu’aux frontières ultimes de l’influence, avec deux réalisateurs incarnant des états opposés de l’esprit criminel — beauté en façade, noirceur en dessous.",
+
+        tr_h: "Le triangle",
+        tr_c1_h: "Domenico Drago",
+        tr_c1_p: "Don charismatique, qui lutte pour préserver l’identité, la loyauté et l’empire familial.",
+        tr_c2_h: "Lenny Abimonti",
+        tr_c2_p: "Conseiller brillant, stratège ambitieux, dont l’intellect dépasse graduellement la conscience.",
+        tr_c3_h: "Greta Otterra",
+        tr_c3_p: "Navigatrice avisée entre art, amour et danger — une force d’équilibre dans la tempête.",
+
+        ch_h: "FS1–FS5",
+        ch_p: "Une chronologie annuelle sur cinq ans : enjeux croissants, pouvoir en évolution, et une question-clé à la fin de chaque chapitre.",
+        fs_note: "* FS signifie Films & Séries.",
+
+        fs1_k: "FS1",
+        fs1_h: "2005",
+        fs1_tag: "Californie",
+        fs1_p: "En 2005 en Californie, Don Domenico Drago règne sur un empire puissant bâti sur la loyauté, la stratégie et l’héritage. Mais quand l’amour, l’ambition et la trahison s’entrechoquent, un seul coup menace tout. Alors que les ennemis se lèvent, une question demeure : le pouvoir peut-il protéger la famille?",
+        fs2_k: "FS2",
+        fs2_h: "2006",
+        fs2_tag: "Après-coup",
+        fs2_p: "La famille Drago encaisse de lourdes pertes personnelles et financières. Tandis que les loyautés sont mises à l’épreuve et que les secrets mijotent, des gestes audacieux sont posés pour reprendre ce qui a été volé. Mais l’avenir reste incertain; face à la tempête, une famille fracturée peut-elle préserver son héritage?",
+        fs3_k: "FS3",
+        fs3_h: "2008",
+        fs3_tag: "Bascule",
+        fs3_p: "Un basculement soudain du leadership attise de féroces rivalités au sein de la dynastie Drago. Les alliances se brisent, les ambitions montent, et de nouveaux jeux de pouvoir redessinent la trajectoire familiale. Dans un monde de loyautés mouvantes et d’influence publique grandissante — qui détient vraiment le contrôle?",
+        fs4_k: "FS4",
+        fs4_h: "2009",
+        fs4_tag: "Global",
+        fs4_p: "Alors que les tensions mondiales s’intensifient et que la confiance interne s’effrite, la famille Drago affronte des combats sur tous les fronts — des empires criminels au pouvoir politique. Les secrets se dévoilent, les ennemis se rapprochent, de nouveaux objectifs naissent : survivre exige l’unité… mais l’unité est-elle encore possible?",
+        fs5_k: "FS5",
+        fs5_h: "2044",
+        fs5_tag: "Futur",
+        fs5_p: "Dans un futur gouverné par la technologie et les titres, le couronnement d’un prince déclenche une nation en ébullition. La rébellion monte, le pouvoir est contesté, et les Dragos se retrouvent à la croisée des chemins. Quelle décision et quel secret pourraient sceller le destin d’un empire entier?",
+
+        nx_h: "Étapes suivantes",
+        nx_p: "Poursuivez l’exploration sur le site principal : positionnement de la Saga, chronologie de production et personnages.",
+        nx_characters: "Personnages",
+        nx_timeline: "Chronologie",
+        nx_production: "Production",
+
+        footer_line: "À des fins de présentation à l’industrie.<br>© 2026 NDF5 Productions Inc. Tous droits réservés."
+      }
+    };
+  </script>
+
+  <!-- Behavior -->
+  <script>
+    // Place this file inside /story-L2-assets/. The main page is one directory higher.
+    const MAIN_PAGE = "../Website_NDF.html";
+    let currentLang = localStorage.getItem("ndf_lang") || "en";
+
+    function initLangFromQueryOnce() {
+      const params = new URLSearchParams(window.location.search);
+      const qpLang = params.get("lang");
+      if (qpLang === "en" || qpLang === "fr") {
+        currentLang = qpLang;
+        localStorage.setItem("ndf_lang", currentLang);
+      }
+    }
+
+    function wireMainLinks() {
+  const langParam = `?lang=${currentLang}`;
+
+  // Top nav
+  const backTop = document.getElementById("backLink");
+  const mainTop = document.getElementById("mainLinkTop");
+  if (backTop) backTop.href = `${MAIN_PAGE}${langParam}#story`;
+  if (mainTop) mainTop.href = `${MAIN_PAGE}${langParam}`;
+
+  // Hero back button
+  const ctaBackHero = document.getElementById("ctaBackHero");
+  if (ctaBackHero) ctaBackHero.href = `${MAIN_PAGE}${langParam}#story`;
+
+  // Bottom next-section buttons (keep)
+  const goCharacters = document.getElementById("goCharacters");
+  const goTimeline = document.getElementById("goTimeline");
+  const goProduction = document.getElementById("goProduction");
+
+  if (goCharacters) goCharacters.href = `${MAIN_PAGE}${langParam}#characters`;
+  if (goTimeline) goTimeline.href = `${MAIN_PAGE}${langParam}#timeline`;
+  if (goProduction) goProduction.href = `${MAIN_PAGE}${langParam}#production`;
+}
+
+    function applyI18n() {
+      document.documentElement.lang = currentLang;
+
+      document.querySelectorAll("[data-i18n]").forEach((el) => {
+        const key = el.getAttribute("data-i18n");
+        const val = i18n[currentLang] && i18n[currentLang][key];
+        if (val == null) return;
+        el.innerHTML = val;
+      });
+
+      const nextLang = currentLang === "en" ? "fr" : "en";
+      const btn = document.getElementById("lang-btn");
+      if (btn) btn.innerText = nextLang.toUpperCase();
+    }
+
+    function toggleLang() {
+      currentLang = currentLang === "en" ? "fr" : "en";
+      localStorage.setItem("ndf_lang", currentLang);
+      wireMainLinks();
+      applyI18n();
+    }
+
+    function initReveal() {
+      const els = document.querySelectorAll(".reveal");
+
+      if (!("IntersectionObserver" in window)) {
+        els.forEach((el) => el.classList.add("active"));
+        return;
+      }
+
+      const io = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((e) => {
+            if (e.isIntersecting) e.target.classList.add("active");
+          });
+        },
+        { threshold: 0.15 }
+      );
+
+      els.forEach((el) => io.observe(el));
+    }
+
+    function showAllRevealAsFallback() {
+      document.querySelectorAll(".reveal").forEach((el) => el.classList.add("active"));
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      try {
+        initLangFromQueryOnce();
+        wireMainLinks();
+        applyI18n();
+        initReveal();
+        lucide.createIcons();
+      } catch (e) {
+        showAllRevealAsFallback();
+        try { lucide.createIcons(); } catch (_) {}
+        console.error(e);
+      }
+    });
+  </script>
+</body>
+</html>
